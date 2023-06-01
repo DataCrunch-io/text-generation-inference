@@ -52,3 +52,18 @@ run-bloom:
 
 run-bloom-quantize:
 	text-generation-launcher --model-id bigscience/bloom --num-shard 8 --quantize --port 8080
+
+download-bloomz-7b1-mt:
+	HF_HUB_ENABLE_HF_TRANSFER=1 text-generation-server download-weights bigscience/bloomz-7b1-mt
+
+run-bloomz-7b1-mt:
+	text-generation-launcher --model-id bigscience/bloomz-7b1-mt --num-shard 8 --port 8080
+
+run-bloomz-7b1-mt-disable-custom-kernels:
+	text-generation-launcher --model-id bigscience/bloomz-7b1-mt --num-shard 8 --disable-custom-kernels --port 8080
+
+download-mt0-xxl-mt:
+	HF_HUB_ENABLE_HF_TRANSFER=1 text-generation-server download-weights bigscience/mt0-xxl-mt
+
+run-mt0-xxl-mt:
+	text-generation-launcher --model-id bigscience/mt0-xxl-mt --num-shard 8 --port 8080
