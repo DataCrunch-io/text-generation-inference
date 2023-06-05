@@ -51,7 +51,7 @@ text-generation-launcher --model-id bigscience/bloomz-7b1-mt --num-shard 1 --por
 | Watermark          | false                    |
 | Do Sample          | false                    |
 
-# Tensor Parallel (TP) - 2 GPUs
+# Tensor Parallel (TP) - 1 GPUs
 
 
 | Step           | Batch Size | Average    | Lowest     | Highest    | p50        | p90        | p99        |
