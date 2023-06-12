@@ -59,11 +59,23 @@ download-bloomz-7b1-mt:
 run-bloomz-7b1-mt:
 	text-generation-launcher --model-id bigscience/bloomz-7b1-mt --num-shard 8 --port 8080
 
+run-bloomz-7b1-mt-quantize:
+	text-generation-launcher --model-id bigscience/bloomz-7b1-mt --num-shard 8 --quantize bitsandbytes --port 8080
+
 run-bloomz-7b1-mt-disable-custom-kernels:
 	text-generation-launcher --model-id bigscience/bloomz-7b1-mt --num-shard 8 --disable-custom-kernels --port 8080
+
+run-bloomz-7b1-mt-cuda-visible-devices:
+	CUDA_VISIBLE_DEVICES=0 text-generation-launcher --model-id bigscience/bloomz-7b1-mt --port 5555
 
 download-mt0-xxl-mt:
 	HF_HUB_ENABLE_HF_TRANSFER=1 text-generation-server download-weights bigscience/mt0-xxl-mt
 
 run-mt0-xxl-mt:
-	text-generation-launcher --model-id bigscience/mt0-xxl-mt --num-shard 8 --port 8080
+	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 text-generation-launcher --model-id bigscience/mt0-xxl-mt --sharded false --port 5555
+
+download-mt0-xl:
+	HF_HUB_ENABLE_HF_TRANSFER=1 text-generation-server download-weights bigscience/mt0-xl
+
+run-mt0-xl:
+	CUDA_VISIBLE_DEVICES=0,1 text-generation-launcher --model-id bigscience/mt0-xl --sharded false --port 5555

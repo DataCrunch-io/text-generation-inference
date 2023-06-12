@@ -1,0 +1,37 @@
+Usage: text-generation-benchmark [OPTIONS] --tokenizer-name <TOKENIZER_NAME>
+
+Options:
+  -t, --tokenizer-name <TOKENIZER_NAME>
+          [env: TOKENIZER_NAME=]
+      --revision <REVISION>
+          [env: REVISION=] [default: main]
+  -b, --batch-size <BATCH_SIZE>
+          
+  -s, --sequence-length <SEQUENCE_LENGTH>
+          [env: SEQUENCE_LENGTH=] [default: 10]
+  -d, --decode-length <DECODE_LENGTH>
+          [env: DECODE_LENGTH=] [default: 8]
+  -r, --runs <RUNS>
+          [env: RUNS=] [default: 10]
+  -w, --warmups <WARMUPS>
+          [env: WARMUPS=] [default: 1]
+      --temperature <TEMPERATURE>
+          [env: TEMPERATURE=]
+      --top-k <TOP_K>
+          [env: TOP_K=]
+      --top-p <TOP_P>
+          [env: TOP_P=]
+      --typical-p <TYPICAL_P>
+          [env: TYPICAL_P=]
+      --repetition-penalty <REPETITION_PENALTY>
+          [env: REPETITION_PENALTY=]
+      --watermark
+          [env: WATERMARK=]
+      --do-sample
+          [env: DO_SAMPLE=]
+  -m, --master-shard-uds-path <MASTER_SHARD_UDS_PATH>
+          [env: MASTER_SHARD_UDS_PATH=] [default: /tmp/text-generation-server-0]
+  -h, --help
+          Print help
+  -V, --version
+          Print version
