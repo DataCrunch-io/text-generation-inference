@@ -75,7 +75,7 @@ run-bloomz-7b1-mt-disable-custom-kernels:
 	text-generation-launcher --model-id bigscience/bloomz-7b1-mt --num-shard 8 --disable-custom-kernels --port 8080
 
 run-bloomz-7b1-mt-cuda-visible-devices:
-	CUDA_VISIBLE_DEVICES=0 text-generation-launcher --model-id bigscience/bloomz-7b1-mt --port 5555
+	CUDA_VISIBLE_DEVICES=0,1 text-generation-launcher --model-id bigscience/bloomz-7b1-mt --num-shard 2 --port 5555
 
 download-mt0-xxl-mt:
 	HF_HUB_ENABLE_HF_TRANSFER=1 text-generation-server download-weights bigscience/mt0-xxl-mt
@@ -94,3 +94,10 @@ download-mt0-xl:
 
 run-mt0-xl:
 	CUDA_VISIBLE_DEVICES=0,1 text-generation-launcher --model-id bigscience/mt0-xl --sharded false --port 5555
+
+# NatDev
+download-30B-Lazarus-GPTQ4bit:
+	HF_HUB_ENABLE_HF_TRANSFER=1 text-generation-server download-weights CalderaAI/30B-Lazarus-GPTQ4bit
+
+run-30B-Lazarus-GPTQ4bit:
+	CUDA_VISIBLE_DEVICES=0 text-generation-launcher --model-id CalderaAI/30B-Lazarus-GPTQ4bit --sharded false --port 5555

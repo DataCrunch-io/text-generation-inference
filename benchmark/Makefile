@@ -27,3 +27,13 @@ benchmark-bloomz-1b1-s500-d500:
 
 benchmark-bloomz-1b1-s500-d500-bs32:
 	text-generation-benchmark --tokenizer-name bigscience/bloomz-1b1 --sequence-length 500 --decode-length 500 --batch-size 32
+# No sharding
+# Single GPU
+# bigscience/bloomz-7b1
+benchmark-bigscience-bloomz-7b1-s500-d500:
+	text-generation-benchmark --tokenizer-name bigscience/bloomz-7b1 --sequence-length 500 --decode-length 500
+
+# NatDev
+# CalderaAI/30B-Lazarus-GPTQ4bit
+benchmark-30B-Lazarus-GPTQ4bit-s500-d500:
+	text-generation-benchmark --tokenizer-name CalderaAI/30B-Lazarus-GPTQ4bit --sequence-length 500 --decode-length 500
