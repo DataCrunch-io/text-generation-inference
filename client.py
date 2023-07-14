@@ -26,13 +26,15 @@ do_sample: bool = True
 # generation finish reason
 stop_sequences: List[str] = ["length"]
 
-tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-xl")
+# local experimentation tokenizer: "google/flan-t5-xl"
+tokenizer_name: str =  "google/flan-t5-xl"
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
 # "id": 21820 = "Hello"
 dummy_input: IntTensor = IntTensor([[21820]])
 # inverse tokenization (sanity check)
 # token: str = tokenizer.decode(dummy_input[0], skip_special_tokens=True)
-input_sequence_tokens: int = 10
-multiple_dummy_repeat = dummy_input.repeat(1, input_sequence_tokens)
+sequence_length: int = 100
+multiple_dummy_repeat = dummy_input.repeat(1, sequence_length - 1)
 prompt: str = tokenizer.decode(multiple_dummy_repeat[0], skip_special_tokens=True)
 
 generate_kwargs: Dict = {"do_sample": do_sample,
@@ -57,7 +59,7 @@ print(results[-1].details)
 
 input_tokens = tokenizer(prompt, return_tensors="pt").input_ids
 
-total_input_sequence_tokens: int = max_concurrent_requests * input_sequence_tokens
+total_input_sequence_tokens: int = max_concurrent_requests * sequence_length
 total_decoded_tokens: int = 0
 
 for prompt, response in zip(prompts,results):
@@ -70,8 +72,8 @@ for prompt, response in zip(prompts,results):
 # stats
 print(f"Serving elapsed time: {elapsed_time:0.4f} seconds")
 print(f"Total requests: {max_concurrent_requests}")
-print(f"Total input tokens: {total_input_sequence_tokens}")
-print(f"Input sequence number of tokens: {np.shape(input_tokens)[-1] -1}")
+print(f"Total input_ids: {total_input_sequence_tokens}")
+print(f"Sequence length: {np.shape(input_tokens)[-1]}")
 print(f"Total decoded tokens: {total_decoded_tokens}")
 print(f"Throughput: {total_decoded_tokens/elapsed_time} tokens/sec")
 print(f"Total processed tokens: {total_decoded_tokens + total_input_sequence_tokens}")
