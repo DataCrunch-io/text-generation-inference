@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from text_generation import AsyncClient
 
 from time import perf_counter
@@ -9,22 +10,32 @@ from torch import IntTensor
 from transformers import AutoTokenizer
 import numpy as np
 
+from hydra import (
+    compose,
+    initialize
+)
+from omegaconf import DictConfig, OmegaConf
+
+
+log = logging.getLogger(__name__)
+# intialize Hydra subsystem
+initialize(version_base=None, config_path="conf")
+cfg: DictConfig = compose("config.yaml")
+
 # endpoint socket address
-addr: str = "http://127.0.0.1"
-port: int = 8080
-serving_system_socket: str = f"{addr}:{port}"
+serving_system_socket: str = f"{cfg.endpoint.addr}:{ cfg.endpoint.port}"
 client = AsyncClient(serving_system_socket)
-max_concurrent_requests: int = 128
+max_concurrent_requests: int = cfg.endpoint.max_concurrent_requests
 
 # uncomment for use natural language prompts
 # prompt: str = "Hello" * 100
 # output_lenght (decoding length)
-max_new_tokens: int = 100
+max_new_tokens: int = cfg.GenerationConfig.max_new_tokens
 # generation_strategy
-repetition_penalty: float = 1.5
-do_sample: bool = True
+repetition_penalty: float = cfg.GenerationConfig.repetition_penalty
+do_sample: bool = cfg.GenerationConfig.do_sample
 # generation finish reason
-stop_sequences: List[str] = ["length"]
+stop_sequences: List[str] = [stop for stop in cfg.GenerationConfig.stop_sequences]
 
 # local experimentation tokenizer: "google/flan-t5-xl"
 tokenizer_name: str =  "google/flan-t5-xl"
@@ -58,6 +69,7 @@ print(f"Serving elapsed time: {elapsed_time:0.4f} seconds")
 print(results[-1].details)
 
 input_tokens = tokenizer(prompt, return_tensors="pt").input_ids
+assert np.shape(input_tokens)[-1] == sequence_length
 
 total_input_sequence_tokens: int = max_concurrent_requests * sequence_length
 total_decoded_tokens: int = 0

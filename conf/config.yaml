@@ -1,0 +1,12 @@
+endpoint:
+  addr: http://127.0.0.1
+  port: 8080
+  max_concurrent_requests: 128
+
+GenerationConfig:
+  max_new_tokens: 100
+  repetition_penalty: 1.5
+  do_sample: True
+  stop_sequences: 
+    - "length"
+  sequence_length: 100
