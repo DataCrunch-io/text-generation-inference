@@ -21,13 +21,16 @@ log = logging.getLogger(__name__)
 # intialize Hydra subsystem
 initialize(version_base=None, config_path="conf")
 cfg: DictConfig = compose("config.yaml")
+print(f"Experiment configuration:\n{OmegaConf.to_yaml(cfg)}")
 
-# endpoint socket address
-serving_system_socket: str = f"{cfg.endpoint.addr}:{ cfg.endpoint.port}"
-client = AsyncClient(serving_system_socket)
-max_concurrent_requests: int = cfg.endpoint.max_concurrent_requests
+# serving system deployment
+max_concurrent_requests: int = cfg.deployment.max_concurrent_requests
+endpoint: str = ""
+if cfg.deployment.local: endpoint = f"{cfg.deployment.addr}:{ cfg.deployment.port}"
+if not cfg.deployment.local: endpoint = cfg.deployment.endpoint
+client = AsyncClient(endpoint)
 
-# uncomment for use natural language prompts
+# uncomment for using natural language prompts
 # prompt: str = "Hello" * 100
 # output_lenght (decoding length)
 max_new_tokens: int = cfg.GenerationConfig.max_new_tokens
@@ -38,15 +41,15 @@ do_sample: bool = cfg.GenerationConfig.do_sample
 stop_sequences: List[str] = [stop for stop in cfg.GenerationConfig.stop_sequences]
 
 # local experimentation tokenizer: "google/flan-t5-xl"
-tokenizer_name: str =  "google/flan-t5-xl"
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+tokenizer = AutoTokenizer.from_pretrained(cfg.macros.tokenizer_name)
 # "id": 21820 = "Hello"
 dummy_input: IntTensor = IntTensor([[21820]])
 # inverse tokenization (sanity check)
 # token: str = tokenizer.decode(dummy_input[0], skip_special_tokens=True)
-sequence_length: int = 100
-multiple_dummy_repeat = dummy_input.repeat(1, sequence_length - 1)
+sequence_length: int = cfg.GenerationConfig.sequence_length
+multiple_dummy_repeat = dummy_input.repeat(1, sequence_length)
 prompt: str = tokenizer.decode(multiple_dummy_repeat[0], skip_special_tokens=True)
+assert np.shape(multiple_dummy_repeat)[-1] == sequence_length
 
 generate_kwargs: Dict = {"do_sample": do_sample,
                          "max_new_tokens": max_new_tokens,
@@ -68,9 +71,6 @@ print(f"Serving elapsed time: {elapsed_time:0.4f} seconds")
 # check the last response
 print(results[-1].details)
 
-input_tokens = tokenizer(prompt, return_tensors="pt").input_ids
-assert np.shape(input_tokens)[-1] == sequence_length
-
 total_input_sequence_tokens: int = max_concurrent_requests * sequence_length
 total_decoded_tokens: int = 0
 
@@ -84,8 +84,8 @@ for prompt, response in zip(prompts,results):
 # stats
 print(f"Serving elapsed time: {elapsed_time:0.4f} seconds")
 print(f"Total requests: {max_concurrent_requests}")
-print(f"Total input_ids: {total_input_sequence_tokens}")
-print(f"Sequence length: {np.shape(input_tokens)[-1]}")
+print(f"Total sequences tokens: {total_input_sequence_tokens}")
+print(f"Sequence length: {sequence_length}")
 print(f"Total decoded tokens: {total_decoded_tokens}")
 print(f"Throughput: {total_decoded_tokens/elapsed_time} tokens/sec")
 print(f"Total processed tokens: {total_decoded_tokens + total_input_sequence_tokens}")

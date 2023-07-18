@@ -1,7 +1,12 @@
-endpoint:
+deployment:
   addr: http://127.0.0.1
   port: 8080
-  max_concurrent_requests: 128
+  max_concurrent_requests: 64
+  local: False
+  endpoint: http://guanaco-65b-merged.inference.takomo.internal 
+
+macros:
+  tokenizer_name: tiiuae/falcon-40b
 
 GenerationConfig:
   max_new_tokens: 100
