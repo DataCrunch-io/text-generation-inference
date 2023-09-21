@@ -1,4 +1,5 @@
 from typing import List
+import time
 
 from text_generation_server.pb import generate_pb2
 from text_generation_server.models.seq2seq_lm import Seq2SeqLM, Seq2SeqLMBatch
@@ -20,9 +21,12 @@ handle = nvmlDeviceGetHandleByIndex(0)
 tokenizer_name: str =  "google/flan-t5-xl"
 tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
 tokenizer.bos_token_id = 0
+st = time.perf_counter_ns()
 default_seq2seq_lm = Seq2SeqLM("google/flan-t5-xl")
+et = time.perf_counter_ns() - st
 model_malloc = nvmlDeviceGetMemoryInfo(handle)
 print(f"Model allocation GPU memory: {(model_malloc.used / 2**30):.4f} GB")
+print(f"Model loading time: {et*1e-9:.4f} s")
 # Generation configuration
 sequence_length: int = 25
 max_new_tokens: int = 25
